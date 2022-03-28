@@ -68,8 +68,10 @@ typedef struct
     uint16_t                    conn_handle; 
     uint16_t                    service_handle;        
     // OUR_JOB: Step 2.D, Add handles for our characteristic
-    ble_gatts_char_handles_t    char_1_handles;
-    ble_gatts_char_handles_t    char_2_handles;
+    ble_gatts_char_handles_t    char_handles_1;
+    ble_gatts_char_handles_t    char_handles_2;
+    ble_gatts_char_handles_t    char_handles_3;
+    ble_gatts_char_handles_t    char_handles_4;
 }ble_os_t;
 
 /**@brief Function for handling BLE Stack events related to our service and characteristic.
