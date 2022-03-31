@@ -178,10 +178,16 @@ static void timer_timeout_handler(void * p_context)
     // OUR_JOB: Step 3.F, Update temperature and characteristic value.
     int32_t temperature = 0;   
     sd_temp_get(&temperature);
+
     our_temperature_characteristic_update_1(&m_our_service, &temperature);
+    nrf_gpio_pin_toggle(LED_2);
     our_temperature_characteristic_update_2(&m_our_service, &temperature);
+    nrf_gpio_pin_toggle(LED_2);
     our_temperature_characteristic_update_3(&m_our_service, &temperature);
+    nrf_gpio_pin_toggle(LED_2);
     our_temperature_characteristic_update_4(&m_our_service, &temperature);
+    nrf_gpio_pin_toggle(LED_2);
+
     nrf_gpio_pin_toggle(LED_4);
 }
 
