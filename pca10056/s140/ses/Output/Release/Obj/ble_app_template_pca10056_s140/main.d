@@ -4,6 +4,8 @@ Output/Release/Obj/ble_app_template_pca10056_s140/main.o: \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/stdint.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/string.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/__crossworks.h \
+ ../../../MAX31865/MAX31865.h \
+ C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/stdio.h \
  C:\NRF52_TEST\nRF5_SDK_17.1.0_ddde560\projects\ble_peripheral\ble_app_own_BLE_service\our_service.h \
  ../../../../../../components/softdevice/s140/headers/ble.h \
  ../../../../../../components/softdevice/s140/headers/nrf_svc.h \
@@ -17,16 +19,16 @@ Output/Release/Obj/ble_app_template_pca10056_s140/main.o: \
  ../../../../../../components/softdevice/s140/headers/ble_gatt.h \
  ../../../../../../components/softdevice/s140/headers/ble_gattc.h \
  ../../../../../../modules/nrfx/mdk/nrf.h \
- ../../../../../../modules/nrfx/mdk/nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833.h \
  ../../../../../../components/toolchain/cmsis/include/core_cm4.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_version.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_compiler.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../../../../components/toolchain/cmsis/include/mpu_armv7.h \
- ../../../../../../modules/nrfx/mdk/system_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/system_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833_bitfields.h \
+ ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52.h \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
  ../../../../../../components/softdevice/s140/headers/ble_gatts.h \
  ../../../../../../components/ble/common/ble_srv_common.h \
@@ -41,7 +43,6 @@ Output/Release/Obj/ble_app_template_pca10056_s140/main.o: \
  ../../../../../../components/softdevice/s140/headers/ble_gatt.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/libraries/util/app_error.h \
- C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/stdio.h \
  ../../../../../../components/libraries/util/sdk_errors.h \
  ../../../../../../components/softdevice/s140/headers/nrf_error.h \
  ../../../../../../components/libraries/util/app_error_weak.h \
@@ -90,18 +91,18 @@ Output/Release/Obj/ble_app_template_pca10056_s140/main.o: \
  ../../../../../../integration/nrfx/nrfx_config.h \
  ../../../../../../modules/nrfx/drivers/nrfx_common.h \
  ../../../../../../modules/nrfx/mdk/nrf_peripherals.h \
- ../../../../../../modules/nrfx/mdk/nrf52840_peripherals.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833_peripherals.h \
  ../../../../../../integration/nrfx/nrfx_glue.h \
  ../../../../../../integration/nrfx/legacy/apply_old_config.h \
  ../../../../../../modules/nrfx/soc/nrfx_irqs.h \
- ../../../../../../modules/nrfx/soc/nrfx_irqs_nrf52840.h \
+ ../../../../../../modules/nrfx/soc/nrfx_irqs_nrf52833.h \
  ../../../../../../modules/nrfx/soc/nrfx_coredep.h \
  ../../../../../../modules/nrfx/soc/nrfx_atomic.h \
  ../../../../../../components/libraries/util/sdk_resources.h \
  ../../../../../../components/softdevice/s140/headers/nrf_sd_def.h \
  ../../../../../../components/softdevice/s140/headers/nrf_soc.h \
  ../../../../../../modules/nrfx/drivers/nrfx_errors.h \
- ../../../../../../components/boards/pca10056.h \
+ ../../../../../../components/boards/pca10100.h \
  ../../../../../../components/libraries/button/app_button.h \
  ../../../../../../components/libraries/sensorsim/sensorsim.h \
  ../../../../../../components/ble/common/ble_conn_state.h \
@@ -109,6 +110,13 @@ Output/Release/Obj/ble_app_template_pca10056_s140/main.o: \
  ../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  ../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_spi.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_spim.h \
+ ../../../../../../modules/nrfx/hal/nrf_spim.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_spi.h \
+ ../../../../../../modules/nrfx/hal/nrf_spi.h \
+ ../../../../../../components/libraries/delay/nrf_delay.h \
+ C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/math.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/strerror/nrf_strerror.h \
  ../../../../../../components/libraries/log/src/nrf_log_internal.h \
