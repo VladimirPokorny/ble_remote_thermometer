@@ -14,16 +14,16 @@ Output/Release/Obj/ble_app_template_pca10056_s140/bsp_btn_ble.o: \
  ../../../../../../components/softdevice/s140/headers/ble_gatt.h \
  ../../../../../../components/softdevice/s140/headers/ble_gattc.h \
  ../../../../../../modules/nrfx/mdk/nrf.h \
- ../../../../../../modules/nrfx/mdk/nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833.h \
  ../../../../../../components/toolchain/cmsis/include/core_cm4.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_version.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_compiler.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../../../../components/toolchain/cmsis/include/mpu_armv7.h \
- ../../../../../../modules/nrfx/mdk/system_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/system_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833_bitfields.h \
+ ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52.h \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
  ../../../../../../components/softdevice/s140/headers/ble_gatts.h \
  C:\NRF52_TEST\nRF5_SDK_17.1.0_ddde560\components\libraries\bsp\bsp.h \
@@ -36,11 +36,11 @@ Output/Release/Obj/ble_app_template_pca10056_s140/bsp_btn_ble.o: \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/stddef.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.70a/include/__crossworks.h \
  ../../../../../../modules/nrfx/mdk/nrf_peripherals.h \
- ../../../../../../modules/nrfx/mdk/nrf52840_peripherals.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833_peripherals.h \
  ../../../../../../integration/nrfx/nrfx_glue.h \
  ../../../../../../integration/nrfx/legacy/apply_old_config.h \
  ../../../../../../modules/nrfx/soc/nrfx_irqs.h \
- ../../../../../../modules/nrfx/soc/nrfx_irqs_nrf52840.h \
+ ../../../../../../modules/nrfx/soc/nrfx_irqs_nrf52833.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
  ../../../../../../components/libraries/util/app_util.h \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
@@ -65,7 +65,7 @@ Output/Release/Obj/ble_app_template_pca10056_s140/bsp_btn_ble.o: \
  ../../../../../../components/softdevice/s140/headers/nrf_sd_def.h \
  ../../../../../../components/softdevice/s140/headers/nrf_soc.h \
  ../../../../../../modules/nrfx/drivers/nrfx_errors.h \
- ../../../../../../components/boards/pca10056.h \
+ ../../../../../../components/boards/pca10100.h \
  ../../../../../../components/libraries/button/app_button.h \
  ../../../../../../components/libraries/util/app_error.h \
  ../../../../../../components/softdevice/common/nrf_sdh_ble.h \

@@ -17,16 +17,16 @@ Output/Release/Obj/ble_app_template_pca10056_s140/ble_advdata.o: \
  ../../../../../../components/softdevice/s140/headers/ble_gatt.h \
  ../../../../../../components/softdevice/s140/headers/ble_gattc.h \
  ../../../../../../modules/nrfx/mdk/nrf.h \
- ../../../../../../modules/nrfx/mdk/nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833.h \
  ../../../../../../components/toolchain/cmsis/include/core_cm4.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_version.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_compiler.h \
  ../../../../../../components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../../../../components/toolchain/cmsis/include/mpu_armv7.h \
- ../../../../../../modules/nrfx/mdk/system_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../../../../modules/nrfx/mdk/system_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf52833_bitfields.h \
+ ../../../../../../modules/nrfx/mdk/nrf52_to_nrf52833.h \
+ ../../../../../../modules/nrfx/mdk/nrf51_to_nrf52.h \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
  ../../../../../../components/softdevice/s140/headers/ble_gatts.h \
  ../../../../../../components/libraries/util/sdk_common.h \

@@ -55,6 +55,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "MAX31865.h"
 #include "our_service.h"
 
 #include "nordic_common.h"
@@ -80,6 +81,14 @@
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
 
+#include "nrf_drv_spi.h"
+#include "app_util_platform.h"
+#include "nrf_gpio.h"
+#include "nrf_delay.h"
+#include "boards.h"
+#include <string.h>
+#include "math.h"
+
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
@@ -87,7 +96,7 @@
 
 #define DEVICE_NAME                     "##1_TEST"               /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+#define APP_ADV_INTERVAL                800                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
 #define APP_ADV_DURATION                18000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
@@ -119,6 +128,23 @@ NRF_BLE_QWR_DEF(m_qwr);                                                         
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
+
+/*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
+#define PT100_R0 (double)   100.0 		//Resistance of the PT100 sensor, at 0 °C
+#define RREF (double)       400.0		//Resistance of the reference resistor connected to the MAX31865
+/*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
+
+
+float     PT100_Temperature_1 = 0.0f;   // actual temperature from sensor
+float     PT100_Temperature_2 = 0.0f;   // actual temperature from sensor
+uint16_t  RTD = 0;        // RTD value
+
+typedef enum {
+  EN_1 = 12,
+  EN_2 = 3,
+  EN_3 = 8,
+  EN_4 = 14,
+} pins_t;
 
 /* YOUR_JOB: Declare all services structure your application is using
  *  BLE_XYZ_DEF(m_xyz);
@@ -176,17 +202,17 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 static void timer_timeout_handler(void * p_context)
 {
     // OUR_JOB: Step 3.F, Update temperature and characteristic value.
-    int32_t temperature = 0;   
-    sd_temp_get(&temperature);
+    int32_t int_temperature = 0;   
+    sd_temp_get(&int_temperature);    // read temperature from internal nRF52 sensor
+    float temperature_1 = 0;
 
-    our_temperature_characteristic_update_1(&m_our_service, &temperature);
-    nrf_gpio_pin_toggle(LED_2);
-    our_temperature_characteristic_update_2(&m_our_service, &temperature);
-    nrf_gpio_pin_toggle(LED_2);
-    our_temperature_characteristic_update_3(&m_our_service, &temperature);
-    nrf_gpio_pin_toggle(LED_2);
-    our_temperature_characteristic_update_4(&m_our_service, &temperature);
-    nrf_gpio_pin_toggle(LED_2);
+    temperature_1 = temperature(PT100_R0, RREF, SLAVE_1);
+    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(temperature_1));
+
+    our_temperature_characteristic_update_1(&m_our_service, &int_temperature);
+    our_temperature_characteristic_update_2(&m_our_service, &int_temperature);
+    our_temperature_characteristic_update_3(&m_our_service, &int_temperature);
+    our_temperature_characteristic_update_4(&m_our_service, &int_temperature);
 
     nrf_gpio_pin_toggle(LED_4);
 }
@@ -760,9 +786,35 @@ int main(void)
 {
     bool erase_bonds;
 
-    // Initialize.
     log_init();
     timers_init();
+
+    // Init.
+    nrf_gpio_cfg_output(SLAVE_1);
+    //nrf_gpio_cfg_output(SLAVE_2);
+    //nrf_gpio_cfg_output(SLAVE_3);
+    //nrf_gpio_cfg_output(SLAVE_4);
+
+    nrf_gpio_cfg_output(EN_1);
+    //nrf_gpio_cfg_output(EN_2);
+    //nrf_gpio_cfg_output(EN_3);
+    //nrf_gpio_cfg_output(EN_4);
+
+    bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
+    
+    spi_init();                             // Initialization of SPI
+
+    begin(MAX31865_4WIRE, SLAVE_1);         // Initialization of MAX31865
+    //begin(MAX31865_4WIRE, SLAVE_2);       
+    //begin(MAX31865_4WIRE, SLAVE_3);
+    //begin(MAX31865_4WIRE, SLAVE_4);
+
+    PT100_Temperature_1 = temperature(PT100_R0, RREF, SLAVE_1);
+    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(PT100_Temperature_1));
+    //nrf_gpio_pin_toggle(LED_2);
+    nrf_delay_ms(300);
+    
+
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
