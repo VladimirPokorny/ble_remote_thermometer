@@ -94,7 +94,7 @@
 #include "nrf_log_default_backends.h"
 
 
-#define DEVICE_NAME                     "##1_TEST"               /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "##1_TEST"                              /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                800                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -129,6 +129,8 @@ BLE_ADVERTISING_DEF(m_advertising);                                             
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
+static volatile bool read_temperature_flag = false;                             /**< Flag for reading temperature. */
+
 /*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
 #define PT100_R0 (double)   100.0 		//Resistance of the PT100 sensor, at 0 °C
 #define RREF (double)       400.0		//Resistance of the reference resistor connected to the MAX31865
@@ -137,6 +139,8 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 
 float     PT100_Temperature_1 = 0.0f;   // actual temperature from sensor
 float     PT100_Temperature_2 = 0.0f;   // actual temperature from sensor
+float     PT100_Temperature_3 = 0.0f;   // actual temperature from sensor
+float     PT100_Temperature_4 = 0.0f;   // actual temperature from sensor
 uint16_t  RTD = 0;        // RTD value
 
 typedef enum {
@@ -145,6 +149,7 @@ typedef enum {
   EN_3 = 8,
   EN_4 = 14,
 } pins_t;
+
 
 /* YOUR_JOB: Declare all services structure your application is using
  *  BLE_XYZ_DEF(m_xyz);
@@ -202,22 +207,14 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 static void timer_timeout_handler(void * p_context)
 {
     // OUR_JOB: Step 3.F, Update temperature and characteristic value.
-    int32_t int_temperature = 0;   
-    sd_temp_get(&int_temperature);    // read temperature from internal nRF52 sensor
-    float temperature_1 = 0;
+    // int32_t int_temperature = 0;   
+    // sd_temp_get(&int_temperature);    // read temperature from internal nRF52 sensor
+    // float temperature_1 = 0;
 
-    temperature_1 = temperature(PT100_R0, RREF, SLAVE_1);
-    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(temperature_1));
-
-    our_temperature_characteristic_update_1(&m_our_service, &int_temperature);
-    our_temperature_characteristic_update_2(&m_our_service, &int_temperature);
-    our_temperature_characteristic_update_3(&m_our_service, &int_temperature);
-    our_temperature_characteristic_update_4(&m_our_service, &int_temperature);
-
+    read_temperature_flag = true;
     nrf_gpio_pin_toggle(LED_4);
 }
-
-
+ 
 
 /**@brief Function for handling Peer Manager events.
  *
@@ -831,10 +828,35 @@ int main(void)
 
     advertising_start(erase_bonds);
 
+    PT100_Temperature_1 = temperature(PT100_R0, 400, SLAVE_1);
+    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(PT100_Temperature_1));
+
     // Enter main loop.
     for (;;)
     {
         idle_state_handle();
+
+        if (read_temperature_flag == true)
+        {
+            //nrf_pin_set(EN_1);
+            //nrf_delay_ms(2);
+
+            PT100_Temperature_1 = temperature(PT100_R0, 400, SLAVE_1) * 1000;
+            PT100_Temperature_2 = temperature(PT100_R0, 430, SLAVE_2) * 1000;
+            PT100_Temperature_3 = 0;
+            PT100_Temperature_4 = 0;
+
+            //nrf reset pin (EN_1);
+
+            our_temperature_characteristic_update_1(&m_our_service, &PT100_Temperature_1);
+            our_temperature_characteristic_update_2(&m_our_service, &PT100_Temperature_2);
+            our_temperature_characteristic_update_3(&m_our_service, &PT100_Temperature_3);
+            our_temperature_characteristic_update_4(&m_our_service, &PT100_Temperature_4);
+
+            read_temperature_flag = false;
+        }
+          
+          else;
     }
 }
 

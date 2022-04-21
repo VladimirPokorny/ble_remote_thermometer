@@ -416,8 +416,6 @@ void our_temperature_characteristic_update_1(ble_os_t *p_our_service, int32_t *t
 
         sd_ble_gatts_hvx(p_our_service->conn_handle, &hvx_params);
     }
-
-
 }
 
 void our_temperature_characteristic_update_2(ble_os_t *p_our_service, int32_t *temperature_value)
