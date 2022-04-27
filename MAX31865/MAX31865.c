@@ -42,7 +42,7 @@ void spi_init(void)
     spi_config.ss_pin     = NRF_SPI_PIN_NOT_CONNECTED;  // 31   P0.31   (CS on MAX31865)
     spi_config.miso_pin   = SPI_MISO_PIN;               // 30   P0.30   (SDO on MAX)
     spi_config.mosi_pin   = SPI_MOSI_PIN;               // 29   P0.29   (SDI on MAX)
-    spi_config.sck_pin    = 27; //SPI_SCK_PIN;                // 26   P0.26   (CLK on MAX)
+    spi_config.sck_pin    = SPI_SCK_PIN;                // 26   P0.26   (CLK on MAX)
 
     spi_config.mode       = NRF_DRV_SPI_MODE_1;         // set up from datasheet (it is able to use spi mode 1 or 3)
     spi_config.frequency  = NRF_DRV_SPI_FREQ_4M;        // max frequency is 5 MHz
@@ -68,7 +68,7 @@ bool begin(max31865_numwires_t wires,
     autoConvert(false, slave_select);
     clearFault(slave_select);
 
-    NRF_LOG_INFO("Initialization of MAX31865 was succesful");     // Without testing so, it could not be true... 
+    NRF_LOG_INFO("Initialization of MAX31865 was succesful");
     return true;
 }
 
@@ -256,43 +256,27 @@ float temperature_new(float RTDnominal,
     Rt = readRTD(slave_select);
     Rt = Rt / 32768;
     Rt = Rt * refResistor;
-    //Rt = Rt / 32;
-    //temp = Rt - 256;
 
-    a = RTDnominal * RTD_B;
-    b = RTDnominal * RTD_A;
-    c = RTDnominal - Rt;
+    if (Rt >= RTDnominal)
+    {
+      a = RTDnominal * RTD_B;
+      b = RTDnominal * RTD_A;
+      c = RTDnominal - Rt;
+          
+      temp = (- b + sqrt(b * b - 4 * a * c))/(2 * a);
 
-    temp = (- b + sqrt(b * b - 4 * a * c))/(2 * a);
+      return temp;
+    }
 
+    else
+    {
+      temp = (Rt/RTDnominal - 1)/(RTD_A + 100 * RTD_B);
 
-    //Z1 = -RTD_A;
-    //Z2 = RTD_A * RTD_A - (4 * RTD_B);
-    //Z3 = (4 * RTD_B) / RTDnominal;
-    //Z4 = 2 * RTD_B;
-
-    //temp = Z2 + (Z3 * Rt);
-    //temp = (sqrt(temp) + Z1) / Z4;
-
-    //if (temp >= 0)
-    //  return temp;
-
-    //// ugh.
-    //Rt /= RTDnominal;
-    //Rt *= 100; // normalize to 100 ohm
-
-    //float rpoly = Rt;
-
-    //temp = -242.02;
-    //temp += 2.2228 * rpoly;
-    //rpoly *= Rt; // square
-    //temp += 2.5859e-3 * rpoly;
-    //rpoly *= Rt; // ^3
-    //temp -= 4.8260e-6 * rpoly;
-    //rpoly *= Rt; // ^4
-    //temp -= 2.8183e-8 * rpoly;
-    //rpoly *= Rt; // ^5
-    //temp += 1.5243e-10 * rpoly;
+      for (int i; i < 3; i++)
+      {
+        temp = temp + (1 + RTD_A * temp + RTD_B * pow(temp, 2) + RTD_C * pow(temp, 3) * (temp - 100) - Rt/RTDnominal)/(RTD_A + 2 * RTD_B * temp - 300 * RTD_C * pow(temp, 2) + 4 * RTD_C * pow(temp, 3));
+      }
+    }
 
     return temp;
 }

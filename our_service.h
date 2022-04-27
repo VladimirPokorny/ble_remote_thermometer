@@ -45,15 +45,13 @@
 #include "ble.h"
 #include "ble_srv_common.h"
 
-#define BLE_UUID_OUR_BASE_UUID              {0x23, 0xD1, 0x13, 0xEF, 0x5F, 0x78, 0x23, 0x15, 0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00} // 128-bit base UUID
-#define BLE_UUID_OUR_SERVICE                0xABCD // Just a random, but recognizable value
-#define BLE_UUID_OUR_CHARACTERISTIC_UUID    0x1000 // Just a random, but recognizable value
+#define BLE_UUID_OUR_BASE_UUID              {0x64, 0x61, 0x44, 0x6D, 0x6F, 0x4D, 0x73, 0x6B, 0x6E, 0x61, 0x68, 0x54, 0x00, 0x00, 0x00, 0x00} // 128-bit base UUID
+#define BLE_UUID_OUR_SERVICE                0xABCD // Service UUID for Celsius temperature (degree Celsius)
 
-#define BLE_UUID_1_TEMPERATURE_UUID         0x1000 // Just a random, but recognizable value
-#define BLE_UUID_2_TEMPERATURE_UUID         0x2000 // Just a random, but recognizable value
-#define BLE_UUID_3_TEMPERATURE_UUID         0x3000 // Just a random, but recognizable value
-#define BLE_UUID_4_TEMPERATURE_UUID         0x4000 // Just a random, but recognizable value
-
+#define BLE_UUID_1_TEMPERATURE_UUID         0x1000 // Sensor 1 UUID
+#define BLE_UUID_2_TEMPERATURE_UUID         0x2000 // Sensor 2 UUID
+#define BLE_UUID_3_TEMPERATURE_UUID         0x3000 // Sensor 3 UUID
+#define BLE_UUID_4_TEMPERATURE_UUID         0x4000 // Sensor 4 UUID
 
 
 /**
@@ -67,7 +65,7 @@ typedef struct
 {
     uint16_t                    conn_handle; 
     uint16_t                    service_handle;        
-    // OUR_JOB: Step 2.D, Add handles for our characteristic
+    // Add handles for our characteristic
     ble_gatts_char_handles_t    char_handles_1;
     ble_gatts_char_handles_t    char_handles_2;
     ble_gatts_char_handles_t    char_handles_3;

@@ -55,11 +55,18 @@ typedef enum {
 } max31865_numwires_t;
 
 typedef enum {
-  SLAVE_1 = 24,
-  SLAVE_2 = 23,
-  SLAVE_3 = 31,
-  SLAVE_4 = 17
+  SLAVE_1 = 23,
+  SLAVE_2 = 24,
+  SLAVE_3 = 17,
+  SLAVE_4 = 31
 } slave_selects_t;
+
+typedef enum {
+  EN_1 = 12,
+  EN_2 = 3,
+  EN_3 = 8,
+  EN_4 = 14,
+} pins_t;
 
 
 
