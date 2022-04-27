@@ -1,54 +1,39 @@
 /**
- * Copyright (c) 2014 - 2021, Nordic Semiconductor ASA
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * Copyright (c) Vladimir Pokorny
+ *    email:  pokorny.v@email.cz
+ *    web:    www.vladimirpokorny.cz
+
+    https://www.vutbr.cz/studenti/zav-prace/detail/142726
+ *    
+ * Copyright (c) 2014 - 2021, Nordic Semiconductor ASA provided BLE template and tutorial
+ * 
+ ****************************************************************************************
+ * This code was coded during a 3-months internship in Linz, Austria.
+ * It contains a BLE application for reading temperatures from RTD sensors by MAX31865.
+ * In the version 1.0 it reads temperatures from 4 sensors and sends them by BLE. Each Sensor
+ * could be enabled or disabled. More about this work is written in the final Master thesis:
+ * 
+ * https://www.vut.cz/studenti/zav-prace/detail/142726
+ * 
+ * Service UUID:  0000272F5468616E6B734D6F6D446164
+ *  UUID of Characteristics:
+ *    Sensor 1: 000010005468616E6B734D6F6D446164
+ *    Sensor 2: 000020005468616E6B734D6F6D446164
+ *    Sensor 3: 000030005468616E6B734D6F6D446164
+ *    Sensor 4: 000040005468616E6B734D6F6D446164
  */
+
 /** @file
  *
- * @defgroup ble_sdk_app_template_main main.c
+ * @defgroup ble_remote_temperature_main main.c
  * @{
- * @ingroup ble_sdk_app_template
- * @brief Template project main file.
+ * @ingroup ble_remote_temperature
+ * @brief Project main file.
  *
- * This file contains a template for creating a new application. It has the code necessary to wakeup
+ * This file contains a BLE app for reading temperatures from RTD sensors by MAX31865.
+ * creating a new application. It has the code necessary to wakeup
  * from button, advertise, get a connection restart advertising on disconnect and if no new
  * connection created go back to system-off mode.
- * It can easily be used as a starting point for creating a new application, the comments identified
- * with 'YOUR_JOB' indicates where and how you can customize.
  */
 
 #include <stdbool.h>
@@ -94,11 +79,38 @@
 #include "nrf_log_default_backends.h"
 
 
-#define DEVICE_NAME                     "##1_TEST"                              /**< Name of device. Will be included in the advertising data. */
-#define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                800                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+/***************************************************************************************************************/
+/*  The characteristics of the RTD sensors, the reference resistors, reading interval and enabled sensors.     */
+/*  Only this variables can be changed!                                                                        */
+/*  More about this work, functions and variables is written in the final Master thesis:                       */
+/*  https://www.vut.cz/studenti/zav-prace/detail/142726                                                        */
+/***************************************************************************************************************/
 
-#define APP_ADV_DURATION                18000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
+#define RTD1_R0 (double)  100.0             // Resistance of the 1. RTD sensor, at 0 °C
+#define RTD2_R0 (double)  100.0             // Resistance of the 2. RTD sensor, at 0 °C
+#define RTD3_R0 (double)  100.0             // Resistance of the 3. RTD sensor, at 0 °C
+#define RTD4_R0 (double)  100.0             // Resistance of the 4. RTD sensor, at 0 °C
+
+#define RREF1 (double)    400.0             // Resistance of the reference resistor R1
+#define RREF2 (double)    430.0             // Resistance of the reference resistor R1
+#define RREF3 (double)    430.0             // Resistance of the reference resistor R1
+#define RREF4 (double)    430.0             // Resistance of the reference resistor R1
+
+#define READ_TEMPERATURE_INTERVAL   1000    // Read temperature interval in ms
+
+#define SENSOR_1_ENABLE   true             // Enable or Disable sensor 1
+#define SENSOR_2_ENABLE   true              // Enable or Disable sensor 2
+#define SENSOR_3_ENABLE   false              // Enable or Disable sensor 3
+#define SENSOR_4_ENABLE   false              // Enable or Disable sensor 4
+
+/*----The characteristics of the RTD sensors, the reference resistors, reading interval and enabled sensors.---*/
+
+
+#define DEVICE_NAME                     "Remote_Thermometer"                    /**< Name of device. Will be included in the advertising data. */
+#define MANUFACTURER_NAME               "Vladimir_Pokorny"                      /**< Manufacturer. Will be passed to Device Information Service. */
+#define APP_ADV_INTERVAL                800 //160                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+
+#define APP_ADV_DURATION                6000                                    /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                       /**< A tag identifying the SoftDevice BLE configuration. */
 
@@ -122,7 +134,6 @@
 
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
-
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
@@ -131,29 +142,16 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 
 static volatile bool read_temperature_flag = false;                             /**< Flag for reading temperature. */
 
-/*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
-#define PT100_R0 (double)   100.0 		//Resistance of the PT100 sensor, at 0 °C
-#define RREF (double)       400.0		//Resistance of the reference resistor connected to the MAX31865
-/*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
 
+float     RTD_Temperature_1 = 0.0f;   // 1. sensor temperature (float)
+float     RTD_Temperature_2 = 0.0f;   // 2. sensor temperature (float)
+float     RTD_Temperature_3 = 0.0f;   // 3. sensor temperature (float)
+float     RTD_Temperature_4 = 0.0f;   // 4. sensor temperature (float)
 
-float     PT100_Temperature_1 = 0.0f;   // actual temperature from sensor
-float     PT100_Temperature_2 = 0.0f;   // actual temperature from sensor
-float     PT100_Temperature_3 = 0.0f;   // actual temperature from sensor
-float     PT100_Temperature_4 = 0.0f;   // actual temperature from sensor
-uint16_t  RTD = 0;        // RTD value
-
-typedef enum {
-  EN_1 = 12,
-  EN_2 = 3,
-  EN_3 = 8,
-  EN_4 = 14,
-} pins_t;
-
-
-/* YOUR_JOB: Declare all services structure your application is using
- *  BLE_XYZ_DEF(m_xyz);
- */
+int32_t   int_temperature_1 = 0;      // 1. sensor temperature for transfering data over BLE
+int32_t   int_temperature_2 = 0;      // 2. sensor temperature for transfering data over BLE
+int32_t   int_temperature_3 = 0;      // 3. sensor temperature for transfering data over BLE
+int32_t   int_temperature_4 = 0;      // 4. sensor temperature for transfering data over BLE
 
 
 ///**
@@ -163,20 +161,16 @@ typedef enum {
 // * 'ble’ indicates that it is a Bluetooth Low Energy relevant structure and 
 // * ‘os’ is short for Our Service). 
 // */
-//typedef struct
-//{
-//    uint16_t    xxs_init;     /**< Handle of Our Service (as provided by the BLE stack). */
-//}ble_xxs_init_t;
 
 ble_os_t m_our_service;
 
 
-// OUR_JOB: Step 3.G, Declare an app_timer id variable and define our timer interval and define a timer interval
+// Declare an app_timer id variable and define our timer interval and define a timer interval
 APP_TIMER_DEF(m_our_char_timer_id);
-#define OUR_CHAR_TIMER_INTERVAL     APP_TIMER_TICKS(1000) // 1000 ms intervals
+#define OUR_CHAR_TIMER_INTERVAL     APP_TIMER_TICKS(READ_TEMPERATURE_INTERVAL)
 
 
-// YOUR_JOB: Use UUIDs for service(s) used in your application.
+// Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
 {
     {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
@@ -203,16 +197,11 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 }
 
 
-// ALREADY_DONE_FOR_YOU: This is a timer event handler
+// This is a timer event handler
 static void timer_timeout_handler(void * p_context)
 {
-    // OUR_JOB: Step 3.F, Update temperature and characteristic value.
-    // int32_t int_temperature = 0;   
-    // sd_temp_get(&int_temperature);    // read temperature from internal nRF52 sensor
-    // float temperature_1 = 0;
-
     read_temperature_flag = true;
-    nrf_gpio_pin_toggle(LED_4);
+    nrf_gpio_pin_toggle(LED_4);   // debugging on development kit
 }
  
 
@@ -249,16 +238,8 @@ static void timers_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Create timers.
-    // OUR_JOB: Step 3.H, Initiate our timer
+    // Initiate our timer
     app_timer_create(&m_our_char_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-
-    /* YOUR_JOB: Create any timers to be used by the application.
-                 Below is an example of how to create a timer.
-                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
-                 one.
-       ret_code_t err_code;
-       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-       APP_ERROR_CHECK(err_code); */
 }
 
 
@@ -279,10 +260,6 @@ static void gap_params_init(void)
                                           (const uint8_t *)DEVICE_NAME,
                                           strlen(DEVICE_NAME));
     APP_ERROR_CHECK(err_code);
-
-    /* YOUR_JOB: Use an appearance value matching the application's use case.
-       err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_);
-       APP_ERROR_CHECK(err_code); */
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
@@ -318,32 +295,6 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 }
 
 
-/**@brief Function for handling the YYY Service events.
- * YOUR_JOB implement a service handler function depending on the event the service you are using can generate
- *
- * @details This function will be called for all YY Service events which are passed to
- *          the application.
- *
- * @param[in]   p_yy_service   YY Service structure.
- * @param[in]   p_evt          Event received from the YY Service.
- *
- *
-static void on_yys_evt(ble_yy_service_t     * p_yy_service,
-                       ble_yy_service_evt_t * p_evt)
-{
-    switch (p_evt->evt_type)
-    {
-        case BLE_YY_NAME_EVT_WRITE:
-            APPL_LOG("[APPL]: charact written with value %s. ", p_evt->params.char_xx.value.p_str);
-            break;
-
-        default:
-            // No implementation needed.
-            break;
-    }
-}
-*/
-
 /**@brief Function for initializing services that will be used by the application.
  */
 static void services_init(void)
@@ -357,29 +308,7 @@ static void services_init(void)
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
 
-    /* YOUR_JOB: Add code to initialize the services used by the application.
-       ble_xxs_init_t                     xxs_init;
-       //ble_yys_init_t                     yys_init;
-
-       // Initialize XXX Service.
-       memset(&xxs_init, 0, sizeof(xxs_init));
-
-       xxs_init.evt_handler                = NULL;
-       xxs_init.is_xxx_notify_supported    = true;
-       xxs_init.ble_xx_initial_value.level = 100;
-
-       err_code = ble_bas_init(&m_xxs, &xxs_init);
-       APP_ERROR_CHECK(err_code); */
-
-       //// Initialize YYY Service.
-       //memset(&yys_init, 0, sizeof(yys_init));
-       //yys_init.evt_handler                  = on_yys_evt;
-       //yys_init.ble_yy_initial_value.counter = 0;
-
-       //err_code = ble_yy_service_init(&yys_init, &yy_init);
-       //APP_ERROR_CHECK(err_code);
-
-       our_service_init(&m_our_service);
+    our_service_init(&m_our_service);
 }
 
 
@@ -442,14 +371,8 @@ static void conn_params_init(void)
  */
 static void application_timers_start(void)
 {
-    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
-       ret_code_t err_code;
-       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-       APP_ERROR_CHECK(err_code); */
-
-    // OUR_JOB: Step 3.I, Start our timer
+    // Start our timer
     app_timer_start(m_our_char_timer_id, OUR_CHAR_TIMER_INTERVAL, NULL);
-
 }
 
 
@@ -586,7 +509,7 @@ static void ble_stack_init(void)
     // Register a handler for BLE events.
     NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
 
-    //OUR_JOB: Step 3.C Set up a BLE event observer to call ble_our_service_on_ble_evt() to do housekeeping of ble connections related to our service and characteristics.
+    // Set up a BLE event observer to call ble_our_service_on_ble_evt() to do housekeeping of ble connections related to our service and characteristics.
     NRF_SDH_BLE_OBSERVER(m_our_service_observer, APP_BLE_OBSERVER_PRIO, ble_our_service_on_ble_evt, (void*) &m_our_service);
 }
 
@@ -785,34 +708,34 @@ int main(void)
 
     log_init();
     timers_init();
-
-    // Init.
-    nrf_gpio_cfg_output(SLAVE_1);
-    //nrf_gpio_cfg_output(SLAVE_2);
-    //nrf_gpio_cfg_output(SLAVE_3);
-    //nrf_gpio_cfg_output(SLAVE_4);
-
-    nrf_gpio_cfg_output(EN_1);
-    //nrf_gpio_cfg_output(EN_2);
-    //nrf_gpio_cfg_output(EN_3);
-    //nrf_gpio_cfg_output(EN_4);
-
-    bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
-    
-    spi_init();                             // Initialization of SPI
-
-    begin(MAX31865_4WIRE, SLAVE_1);         // Initialization of MAX31865
-    //begin(MAX31865_4WIRE, SLAVE_2);       
-    //begin(MAX31865_4WIRE, SLAVE_3);
-    //begin(MAX31865_4WIRE, SLAVE_4);
-
-    PT100_Temperature_1 = temperature(PT100_R0, RREF, SLAVE_1);
-    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(PT100_Temperature_1));
-    //nrf_gpio_pin_toggle(LED_2);
-    nrf_delay_ms(300);
-    
-
     buttons_leds_init(&erase_bonds);
+    
+
+    // Initialization of slave selects pins
+    nrf_gpio_cfg_output(SLAVE_1);
+    nrf_gpio_cfg_output(SLAVE_2);
+    nrf_gpio_cfg_output(SLAVE_3);
+    nrf_gpio_cfg_output(SLAVE_4);
+
+    // Initialization of enable pins for load switches
+    nrf_gpio_cfg_output(EN_1);
+    nrf_gpio_cfg_output(EN_2);
+    nrf_gpio_cfg_output(EN_3);
+    nrf_gpio_cfg_output(EN_4);
+
+    // Initialization of board LEDs (Development kit)
+    bsp_board_init(BSP_INIT_LEDS);          
+    
+    // Initialization of SPI
+    spi_init();                             
+    
+    // Initialization of MAX31865
+    begin(MAX31865_4WIRE, SLAVE_1);         
+    begin(MAX31865_4WIRE, SLAVE_2);       
+    begin(MAX31865_4WIRE, SLAVE_3);
+    begin(MAX31865_4WIRE, SLAVE_4);
+
+    
     power_management_init();
     ble_stack_init();
     gap_params_init();
@@ -828,8 +751,6 @@ int main(void)
 
     advertising_start(erase_bonds);
 
-    PT100_Temperature_1 = temperature(PT100_R0, 400, SLAVE_1);
-    NRF_LOG_INFO("Temperature SLAVE 1: "NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(PT100_Temperature_1));
 
     // Enter main loop.
     for (;;)
@@ -838,25 +759,61 @@ int main(void)
 
         if (read_temperature_flag == true)
         {
-            //nrf_pin_set(EN_1);
-            //nrf_delay_ms(2);
+            if (SENSOR_1_ENABLE == true)
+            {
+                // 1. Temperature sensor
+                nrf_gpio_pin_set(EN_1);
+                nrf_delay_ms(2);
 
-            PT100_Temperature_1 = temperature(PT100_R0, 400, SLAVE_1) * 1000;
-            PT100_Temperature_2 = temperature(PT100_R0, 430, SLAVE_2) * 1000;
-            PT100_Temperature_3 = 0;
-            PT100_Temperature_4 = 0;
+                RTD_Temperature_1 = temperature_new(RTD1_R0, RREF1, SLAVE_1);
+                int_temperature_1 = RTD_Temperature_1 * 1000;
 
-            //nrf reset pin (EN_1);
+                nrf_gpio_pin_clear(EN_1);
+            }
 
-            our_temperature_characteristic_update_1(&m_our_service, &PT100_Temperature_1);
-            our_temperature_characteristic_update_2(&m_our_service, &PT100_Temperature_2);
-            our_temperature_characteristic_update_3(&m_our_service, &PT100_Temperature_3);
-            our_temperature_characteristic_update_4(&m_our_service, &PT100_Temperature_4);
+            if (SENSOR_2_ENABLE == true)
+            {
+                // 2. Temperature sensor
+                nrf_gpio_pin_set(EN_2);
+                nrf_delay_ms(2);
+
+                RTD_Temperature_2 = temperature_new(RTD2_R0, RREF2, SLAVE_2);
+                int_temperature_2 = RTD_Temperature_2 * 1000;
+
+                nrf_gpio_pin_clear(EN_2);
+            }
+
+            if (SENSOR_3_ENABLE == true)
+            {
+                // 3. Temperature sensor
+                nrf_gpio_pin_set(EN_3);
+                nrf_delay_ms(2);
+
+                RTD_Temperature_3 = temperature(RTD3_R0, RREF3, SLAVE_3);
+                int_temperature_3 = RTD_Temperature_3 * 1000;
+
+                nrf_gpio_pin_clear(EN_3);
+            }
+
+            if (SENSOR_3_ENABLE == true)
+            {
+                // 4. Temperature sensor
+                nrf_gpio_pin_set(EN_4);
+                nrf_delay_ms(2);
+
+                RTD_Temperature_4 = temperature(RTD4_R0, RREF4, SLAVE_4);
+                int_temperature_4 = RTD_Temperature_4 * 1000;
+
+                nrf_gpio_pin_clear(EN_4);
+            }
+
+            our_temperature_characteristic_update_1(&m_our_service, &int_temperature_1);
+            our_temperature_characteristic_update_2(&m_our_service, &int_temperature_2);
+            our_temperature_characteristic_update_3(&m_our_service, &int_temperature_3);
+            our_temperature_characteristic_update_4(&m_our_service, &int_temperature_4);
 
             read_temperature_flag = false;
         }
-          
-          else;
     }
 }
 
