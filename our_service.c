@@ -66,7 +66,6 @@ void ble_our_service_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
-
 /**@brief Function for adding our new characterstic to "Our service" that we initiated in the previous tutorial. 
  *
  * @param[in]   p_our_service        Our Service structure.
@@ -385,8 +384,6 @@ void our_service_init(ble_os_t * p_our_service)
     //    SEGGER_RTT_printf(0, "Service UUID type: 0x%#02x\n", service_uuid.type); // Print UUID type. Should match BLE_UUID_TYPE_VENDOR_BEGIN. Search for BLE_UUID_TYPES in ble_types.h for more info
     //    SEGGER_RTT_printf(0, "Service handle: 0x%#04x\n", p_our_service->service_handle); // Print out the service handle. Should match service handle shown in MCP under Attribute values
 }
-
-
 
 // Function to be called when updating characteristic value
 void our_temperature_characteristic_update_1(ble_os_t *p_our_service, int32_t *temperature_value)

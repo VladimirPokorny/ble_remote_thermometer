@@ -78,7 +78,6 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-
 /***************************************************************************************************************/
 /*  The characteristics of the RTD sensors, the reference resistors, reading interval and enabled sensors.     */
 /*  Only this variables can be changed!                                                                        */
@@ -91,26 +90,31 @@
 #define RTD3_R0 (double)  100.0             // Resistance of the 3. RTD sensor, at 0 °C
 #define RTD4_R0 (double)  100.0             // Resistance of the 4. RTD sensor, at 0 °C
 
-#define RREF1 (double)    400.0             // Resistance of the reference resistor R1
-#define RREF2 (double)    430.0             // Resistance of the reference resistor R1
-#define RREF3 (double)    430.0             // Resistance of the reference resistor R1
-#define RREF4 (double)    430.0             // Resistance of the reference resistor R1
+#define RREF1 (double)    430.0             // Resistance of the reference resistor R1
+#define RREF2 (double)    430.0             // Resistance of the reference resistor R2
+#define RREF3 (double)    430.0             // Resistance of the reference resistor R3
+#define RREF4 (double)    430.0             // Resistance of the reference resistor R4
 
 #define READ_TEMPERATURE_INTERVAL   1000    // Read temperature interval in ms
 
-#define SENSOR_1_ENABLE   true             // Enable or Disable sensor 1
+#define SENSOR_1_ENABLE   true              // Enable or Disable sensor 1
 #define SENSOR_2_ENABLE   true              // Enable or Disable sensor 2
-#define SENSOR_3_ENABLE   false              // Enable or Disable sensor 3
-#define SENSOR_4_ENABLE   false              // Enable or Disable sensor 4
+#define SENSOR_3_ENABLE   false             // Enable or Disable sensor 3
+#define SENSOR_4_ENABLE   false             // Enable or Disable sensor 4
+
+// MAX31865_2WIRE   or    MAX31865_3WIRE    or    MAX31865_4WIRE
+#define NUMWIRE_SENSOR_1  MAX31865_4WIRE    // Number of measuring wires sensor 1 
+#define NUMWIRE_SENSOR_2  MAX31865_4WIRE    // Number of measuring wires sensor 2
+#define NUMWIRE_SENSOR_3  MAX31865_4WIRE    // Number of measuring wires sensor 3
+#define NUMWIRE_SENSOR_4  MAX31865_4WIRE    // Number of measuring wires sensor 4
 
 /*----The characteristics of the RTD sensors, the reference resistors, reading interval and enabled sensors.---*/
 
-
 #define DEVICE_NAME                     "Remote_Thermometer"                    /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "Vladimir_Pokorny"                      /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                800 //160                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+#define APP_ADV_INTERVAL                160                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 100 ms). */
 
-#define APP_ADV_DURATION                6000                                    /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
+#define APP_ADV_DURATION                6000                                    /**< The advertising duration (60 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                       /**< A tag identifying the SoftDevice BLE configuration. */
 
@@ -153,7 +157,6 @@ int32_t   int_temperature_2 = 0;      // 2. sensor temperature for transfering d
 int32_t   int_temperature_3 = 0;      // 3. sensor temperature for transfering data over BLE
 int32_t   int_temperature_4 = 0;      // 4. sensor temperature for transfering data over BLE
 
-
 ///**
 // * @brief This structure contains various status information for our service. 
 // * It only holds one entry now, but will be populated with more items as we go.
@@ -164,11 +167,9 @@ int32_t   int_temperature_4 = 0;      // 4. sensor temperature for transfering d
 
 ble_os_t m_our_service;
 
-
 // Declare an app_timer id variable and define our timer interval and define a timer interval
 APP_TIMER_DEF(m_our_char_timer_id);
 #define OUR_CHAR_TIMER_INTERVAL     APP_TIMER_TICKS(READ_TEMPERATURE_INTERVAL)
-
 
 // Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
@@ -176,9 +177,7 @@ static ble_uuid_t m_adv_uuids[] =                                               
     {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
 };
 
-
 static void advertising_start(bool erase_bonds);
-
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -700,6 +699,8 @@ static void advertising_start(bool erase_bonds)
 }
 
 
+
+
 /**@brief Function for application main entry.
  */
 int main(void)
@@ -709,7 +710,6 @@ int main(void)
     log_init();
     timers_init();
     buttons_leds_init(&erase_bonds);
-    
 
     // Initialization of slave selects pins
     nrf_gpio_cfg_output(SLAVE_1);
@@ -723,19 +723,18 @@ int main(void)
     nrf_gpio_cfg_output(EN_3);
     nrf_gpio_cfg_output(EN_4);
 
-    // Initialization of board LEDs (Development kit)
+    // Initialization of board LEDs (only on development kit)
     bsp_board_init(BSP_INIT_LEDS);          
     
     // Initialization of SPI
     spi_init();                             
     
     // Initialization of MAX31865
-    begin(MAX31865_4WIRE, SLAVE_1);         
-    begin(MAX31865_4WIRE, SLAVE_2);       
-    begin(MAX31865_4WIRE, SLAVE_3);
-    begin(MAX31865_4WIRE, SLAVE_4);
+    begin(NUMWIRE_SENSOR_1, SLAVE_1);         
+    begin(NUMWIRE_SENSOR_2, SLAVE_2);       
+    begin(NUMWIRE_SENSOR_3, SLAVE_3);
+    begin(NUMWIRE_SENSOR_4, SLAVE_4);
 
-    
     power_management_init();
     ble_stack_init();
     gap_params_init();
@@ -746,77 +745,78 @@ int main(void)
     peer_manager_init();
 
     // Start execution.
-    NRF_LOG_INFO("Template example started.");
+    NRF_LOG_INFO("Measuring temperature started.");
     application_timers_start();
 
     advertising_start(erase_bonds);
 
-
     // Enter main loop.
     for (;;)
     {
-        idle_state_handle();
+      idle_state_handle();    // entering power save mode
 
-        if (read_temperature_flag == true)
+      if (read_temperature_flag == true)
+      {
+        if (SENSOR_1_ENABLE == true)
         {
-            if (SENSOR_1_ENABLE == true)
-            {
-                // 1. Temperature sensor
-                nrf_gpio_pin_set(EN_1);
-                nrf_delay_ms(2);
+          // 1. Temperature sensor
+          nrf_gpio_pin_set(EN_1);
+          nrf_delay_ms(2);
 
-                RTD_Temperature_1 = temperature_new(RTD1_R0, RREF1, SLAVE_1);
-                int_temperature_1 = RTD_Temperature_1 * 1000;
+          begin(NUMWIRE_SENSOR_1, SLAVE_1);
+          RTD_Temperature_1 = temperature_new(RTD1_R0, RREF1, SLAVE_1);
+          int_temperature_1 = RTD_Temperature_1 * 1000;
 
-                nrf_gpio_pin_clear(EN_1);
-            }
-
-            if (SENSOR_2_ENABLE == true)
-            {
-                // 2. Temperature sensor
-                nrf_gpio_pin_set(EN_2);
-                nrf_delay_ms(2);
-
-                RTD_Temperature_2 = temperature_new(RTD2_R0, RREF2, SLAVE_2);
-                int_temperature_2 = RTD_Temperature_2 * 1000;
-
-                nrf_gpio_pin_clear(EN_2);
-            }
-
-            if (SENSOR_3_ENABLE == true)
-            {
-                // 3. Temperature sensor
-                nrf_gpio_pin_set(EN_3);
-                nrf_delay_ms(2);
-
-                RTD_Temperature_3 = temperature(RTD3_R0, RREF3, SLAVE_3);
-                int_temperature_3 = RTD_Temperature_3 * 1000;
-
-                nrf_gpio_pin_clear(EN_3);
-            }
-
-            if (SENSOR_3_ENABLE == true)
-            {
-                // 4. Temperature sensor
-                nrf_gpio_pin_set(EN_4);
-                nrf_delay_ms(2);
-
-                RTD_Temperature_4 = temperature(RTD4_R0, RREF4, SLAVE_4);
-                int_temperature_4 = RTD_Temperature_4 * 1000;
-
-                nrf_gpio_pin_clear(EN_4);
-            }
-
-            our_temperature_characteristic_update_1(&m_our_service, &int_temperature_1);
-            our_temperature_characteristic_update_2(&m_our_service, &int_temperature_2);
-            our_temperature_characteristic_update_3(&m_our_service, &int_temperature_3);
-            our_temperature_characteristic_update_4(&m_our_service, &int_temperature_4);
-
-            read_temperature_flag = false;
+          nrf_gpio_pin_clear(EN_1);
+          our_temperature_characteristic_update_1(&m_our_service, &int_temperature_1);
         }
+
+        if (SENSOR_2_ENABLE == true)
+        {
+          // 2. Temperature sensor
+          nrf_gpio_pin_set(EN_2);
+          nrf_delay_ms(2);
+
+          begin(NUMWIRE_SENSOR_2, SLAVE_2);
+          RTD_Temperature_2 = temperature_new(RTD2_R0, RREF2, SLAVE_2);
+          int_temperature_2 = RTD_Temperature_2 * 1000;
+
+          nrf_gpio_pin_clear(EN_2);
+          our_temperature_characteristic_update_2(&m_our_service, &int_temperature_2);
+        }
+
+        if (SENSOR_3_ENABLE == true)
+        {
+          // 3. Temperature sensor
+          nrf_gpio_pin_set(EN_3);
+          nrf_delay_ms(2);
+          
+          begin(NUMWIRE_SENSOR_3, SLAVE_3);
+          RTD_Temperature_3 = temperature(RTD3_R0, RREF3, SLAVE_3);
+          int_temperature_3 = RTD_Temperature_3 * 1000;
+
+          nrf_gpio_pin_clear(EN_3);
+          our_temperature_characteristic_update_3(&m_our_service, &int_temperature_3);
+        }
+
+        if (SENSOR_4_ENABLE == true)
+        {
+          // 4. Temperature sensor
+          nrf_gpio_pin_set(EN_4);
+          nrf_delay_ms(2);
+
+          begin(NUMWIRE_SENSOR_4, SLAVE_4);
+          RTD_Temperature_4 = temperature(RTD4_R0, RREF4, SLAVE_4);
+          int_temperature_4 = RTD_Temperature_4 * 1000;
+
+          nrf_gpio_pin_clear(EN_4);
+          our_temperature_characteristic_update_4(&m_our_service, &int_temperature_4);
+        }
+
+        read_temperature_flag = false;
+      }
     }
 }
-
 
 /**
  * @}
