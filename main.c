@@ -763,12 +763,13 @@ int main(void)
           nrf_gpio_pin_set(EN_1);
           nrf_delay_ms(2);
 
-          begin(NUMWIRE_SENSOR_1, SLAVE_1);
-          RTD_Temperature_1 = temperature_new(RTD1_R0, RREF1, SLAVE_1);
+          //begin(MAX31865_4WIRE, SLAVE_1);
+          RTD_Temperature_1 = temperature(RTD1_R0, RREF1, SLAVE_1);
           int_temperature_1 = RTD_Temperature_1 * 1000;
 
           nrf_gpio_pin_clear(EN_1);
-          our_temperature_characteristic_update_1(&m_our_service, &int_temperature_1);
+
+          our_temperature_characteristic_update_1(&m_our_service, &int_temperature_1);        
         }
 
         if (SENSOR_2_ENABLE == true)
@@ -777,11 +778,12 @@ int main(void)
           nrf_gpio_pin_set(EN_2);
           nrf_delay_ms(2);
 
-          begin(NUMWIRE_SENSOR_2, SLAVE_2);
-          RTD_Temperature_2 = temperature_new(RTD2_R0, RREF2, SLAVE_2);
+          //begin(MAX31865_4WIRE, SLAVE_2);
+          RTD_Temperature_2 = temperature(RTD2_R0, RREF2, SLAVE_2);
           int_temperature_2 = RTD_Temperature_2 * 1000;
 
           nrf_gpio_pin_clear(EN_2);
+
           our_temperature_characteristic_update_2(&m_our_service, &int_temperature_2);
         }
 
@@ -791,29 +793,32 @@ int main(void)
           nrf_gpio_pin_set(EN_3);
           nrf_delay_ms(2);
           
-          begin(NUMWIRE_SENSOR_3, SLAVE_3);
+          //begin(MAX31865_4WIRE, SLAVE_3);
           RTD_Temperature_3 = temperature(RTD3_R0, RREF3, SLAVE_3);
           int_temperature_3 = RTD_Temperature_3 * 1000;
 
           nrf_gpio_pin_clear(EN_3);
+
           our_temperature_characteristic_update_3(&m_our_service, &int_temperature_3);
         }
 
-        if (SENSOR_4_ENABLE == true)
+        if (SENSOR_3_ENABLE == true)
         {
           // 4. Temperature sensor
           nrf_gpio_pin_set(EN_4);
           nrf_delay_ms(2);
 
-          begin(NUMWIRE_SENSOR_4, SLAVE_4);
+          //begin(MAX31865_4WIRE, SLAVE_4);
           RTD_Temperature_4 = temperature(RTD4_R0, RREF4, SLAVE_4);
           int_temperature_4 = RTD_Temperature_4 * 1000;
 
           nrf_gpio_pin_clear(EN_4);
-          our_temperature_characteristic_update_4(&m_our_service, &int_temperature_4);
-        }
 
+          our_temperature_characteristic_update_4(&m_our_service, &int_temperature_4);
+        }       
+        
         read_temperature_flag = false;
+
       }
     }
 }
