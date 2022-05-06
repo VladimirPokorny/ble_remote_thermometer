@@ -76,10 +76,12 @@
     <folder Name="None">
       <file file_name="../../../../../../modules/nrfx/mdk/ses_startup_nrf52840.s">
         <configuration Name="Release" build_exclude_from_build="Yes" />
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
       </file>
       <file file_name="../../../../../../modules/nrfx/mdk/ses_startup_nrf_common.s" />
       <file file_name="../../../../../../modules/nrfx/mdk/system_nrf52840.c">
         <configuration Name="Release" build_exclude_from_build="Yes" />
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
       </file>
       <file file_name="../../../../../../modules/nrfx/mdk/ses_startup_nrf52.s" />
       <file file_name="../../../../../../modules/nrfx/mdk/system_nrf52.c" />
@@ -114,12 +116,15 @@
         <file file_name="../../../MAX31865/MAX31865.h" />
         <file file_name="../config/sdk_config_SPI.h">
           <configuration Name="Release" build_exclude_from_build="Yes" />
+          <configuration Name="Debug" build_exclude_from_build="Yes" />
         </file>
       </folder>
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../../../../../../external/segger_rtt/SEGGER_RTT.c" />
-      <file file_name="../../../../../../external/segger_rtt/SEGGER_RTT_Syscalls_SES.c" />
+      <file file_name="../../../../../../external/segger_rtt/SEGGER_RTT_Syscalls_SES.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
       <file file_name="../../../../../../external/segger_rtt/SEGGER_RTT_printf.c" />
     </folder>
     <folder Name="nRF_BLE">

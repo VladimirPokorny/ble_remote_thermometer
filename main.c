@@ -85,10 +85,10 @@
 /*  https://www.vut.cz/studenti/zav-prace/detail/142726                                                        */
 /***************************************************************************************************************/
 
-#define RTD1_R0 (double)  100.0             // Resistance of the 1. RTD sensor, at 0 °C
-#define RTD2_R0 (double)  100.0             // Resistance of the 2. RTD sensor, at 0 °C
-#define RTD3_R0 (double)  100.0             // Resistance of the 3. RTD sensor, at 0 °C
-#define RTD4_R0 (double)  100.0             // Resistance of the 4. RTD sensor, at 0 °C
+#define RTD1_R0 (double)  100.0             // Resistance of the 1. RTD sensor, at 0 C
+#define RTD2_R0 (double)  100.0             // Resistance of the 2. RTD sensor, at 0 C
+#define RTD3_R0 (double)  100.0             // Resistance of the 3. RTD sensor, at 0 C
+#define RTD4_R0 (double)  100.0             // Resistance of the 4. RTD sensor, at 0 C
 
 #define RREF1 (double)    430.0             // Resistance of the reference resistor R1
 #define RREF2 (double)    430.0             // Resistance of the reference resistor R2
@@ -99,7 +99,7 @@
 
 #define SENSOR_1_ENABLE   true              // Enable or Disable sensor 1
 #define SENSOR_2_ENABLE   true              // Enable or Disable sensor 2
-#define SENSOR_3_ENABLE   false             // Enable or Disable sensor 3
+#define SENSOR_3_ENABLE   false            // Enable or Disable sensor 3
 #define SENSOR_4_ENABLE   false             // Enable or Disable sensor 4
 
 // MAX31865_2WIRE   or    MAX31865_3WIRE    or    MAX31865_4WIRE
@@ -161,8 +161,8 @@ int32_t   int_temperature_4 = 0;      // 4. sensor temperature for transfering d
 // * @brief This structure contains various status information for our service. 
 // * It only holds one entry now, but will be populated with more items as we go.
 // * The name is based on the naming convention used in Nordic's SDKs. 
-// * 'ble’ indicates that it is a Bluetooth Low Energy relevant structure and 
-// * ‘os’ is short for Our Service). 
+// * 'ble indicates that it is a Bluetooth Low Energy relevant structure and 
+// * os is short for Our Service). 
 // */
 
 ble_os_t m_our_service;
@@ -719,9 +719,13 @@ int main(void)
 
     // Initialization of enable pins for load switches
     nrf_gpio_cfg_output(EN_1);
+    //nrf_gpio_pin_clear(EN_1);
     nrf_gpio_cfg_output(EN_2);
+    //nrf_gpio_pin_clear(EN_2);
     nrf_gpio_cfg_output(EN_3);
+    //nrf_gpio_pin_clear(EN_3);
     nrf_gpio_cfg_output(EN_4);
+    //nrf_gpio_pin_clear(EN_4);
 
     // Initialization of board LEDs (only on development kit)
     bsp_board_init(BSP_INIT_LEDS);          
